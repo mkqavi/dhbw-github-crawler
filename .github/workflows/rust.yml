@@ -7,18 +7,38 @@ on:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    name: Release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
 
     steps:
     - uses: actions/checkout@v1
+    - uses: hecrj/setup-rust-action@v1
+      with:
+        rust-version: stable
     - name: Build
       run: cargo build --verbose --release
+    - name: Move Unix
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
+      run: mv ./target/release/dhbwghc ./dhbwghc-${{ matrix.os }}
+    - name: Move Windows
+      if: matrix.os == 'windows-latest'
+      run: mv ./target/release/dhbwghc.exe ./dhbwghc-${{ matrix.os }}.exe
     - name: Run tests
       run: cargo test --verbose --release
-    - name: Release
+    - name: Release Unix
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
       uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        files: target/release/dhbwghc
+        files: dhbwghc-${{ matrix.os }}
+    - name: Release Windows
+      if: matrix.os == 'windows-latest'
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: dhbwghc-${{ matrix.os }}.exe
