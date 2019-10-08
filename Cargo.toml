@@ -1,6 +1,6 @@
 [package]
 name = "dhbwghc"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Marvin König <dev@mkqavi.com>"]
 description = "A simple crawler which clones specified repositories"
 edition = "2018"
@@ -11,3 +11,4 @@ edition = "2018"
 clap = "2.33.0"
 url = "2.1.0"
 git2 = "0.10.1"
+chrono = "0.4.9"
